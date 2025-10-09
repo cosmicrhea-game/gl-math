@@ -19,8 +19,8 @@
 // TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 // MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
 
+import GLMath
 import XCTest
-import SGLMath
 
 class SwizzleTests: XCTestCase {
 
@@ -41,6 +41,6 @@ class SwizzleTests: XCTestCase {
 
     static var allTests = [
         ("test1", test1),
-        ("test2", test2)
+        ("test2", test2),
     ]
 }

@@ -19,8 +19,8 @@
 // TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 // MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
 
+import GLMath
 import XCTest
-import SGLMath
 
 class Matrix4x4Tests: XCTestCase {
 
@@ -60,7 +60,7 @@ class Matrix4x4Tests: XCTestCase {
             vec4(0.3, 0.5, 0.7, 0.2),
             vec4(0.4, 0.3, 0.2, 0.6)
         )
-        XCTAssertEqualWithAccuracy(m/m, mat4(), accuracy: 0.000001)
+        XCTAssertEqualWithAccuracy(m / m, mat4(), accuracy: 0.000001)
     }
 
     func testMultiplyWith2x4() {
@@ -125,6 +125,6 @@ class Matrix4x4Tests: XCTestCase {
         ("testDivide", testDivide),
         ("testMultiplyWith2x4", testMultiplyWith2x4),
         ("testMultiplyVector", testMultiplyVector),
-        ("testMultiArray", testMultiArray)
+        ("testMultiArray", testMultiArray),
     ]
 }

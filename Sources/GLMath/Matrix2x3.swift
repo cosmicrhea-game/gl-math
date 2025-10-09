@@ -26,14 +26,14 @@ public struct Matrix2x3<T: ArithmeticType>: MatrixType {
 
     public subscript(column: Int) -> Vector3<T> {
         get {
-            switch(column) {
+            switch column {
             case 0: return x
             case 1: return y
             default: preconditionFailure("Matrix index out of range")
             }
         }
         set {
-            switch(column) {
+            switch column {
             case 0: x = newValue
             case 1: y = newValue
             default: preconditionFailure("Matrix index out of range")
@@ -45,7 +45,7 @@ public struct Matrix2x3<T: ArithmeticType>: MatrixType {
         return Array([x.elements, y.elements].joined())
     }
 
-    public func makeIterator() -> IndexingIterator<Array<Element>> {
+    public func makeIterator() -> IndexingIterator<[Element]> {
         return elements.makeIterator()
     }
 
@@ -54,13 +54,16 @@ public struct Matrix2x3<T: ArithmeticType>: MatrixType {
     }
 
     public var debugDescription: String {
-        return String(describing: type(of: self)) + "(" + [x, y].map { (v: Vector3<T>) -> String in
-            "[" + [v.x, v.y, v.z].map { (n: T) -> String in String(describing: n) }.joined(separator: ", ") + "]"
-        }.joined(separator: ", ") + ")"
+        return String(describing: type(of: self)) + "("
+            + [x, y].map { (v: Vector3<T>) -> String in
+                "["
+                    + [v.x, v.y, v.z].map { (n: T) -> String in String(describing: n) }.joined(
+                        separator: ", ") + "]"
+            }.joined(separator: ", ") + ")"
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(SGLMath.hash(x.hashValue, y.hashValue))
+        hasher.combine(GLMath.hash(x.hashValue, y.hashValue))
     }
 
     public init() {
@@ -81,9 +84,9 @@ public struct Matrix2x3<T: ArithmeticType>: MatrixType {
     public init(
         _ x1: T, _ y1: T, _ z1: T,
         _ x2: T, _ y2: T, _ z2: T
-        ) {
-            self.x = Vector3<T>(x1, y1, z1)
-            self.y = Vector3<T>(x2, y2, z2)
+    ) {
+        self.x = Vector3<T>(x1, y1, z1)
+        self.y = Vector3<T>(x2, y2, z2)
     }
 
     public init(_ m: Matrix2x2<T>) {
@@ -191,22 +194,22 @@ public struct Matrix2x3<T: ArithmeticType>: MatrixType {
         self.y = Vector3<T>(m.y)
     }
 
-    public init (_ m: Matrix2x3<T>, _ op:(_:T) -> T) {
+    public init(_ m: Matrix2x3<T>, _ op: (_: T) -> T) {
         self.x = Vector3<T>(m.x, op)
         self.y = Vector3<T>(m.y, op)
     }
 
-    public init (_ s: T, _ m: Matrix2x3<T>, _ op:(_:T, _:T) -> T) {
+    public init(_ s: T, _ m: Matrix2x3<T>, _ op: (_: T, _: T) -> T) {
         self.x = Vector3<T>(s, m.x, op)
         self.y = Vector3<T>(s, m.y, op)
     }
 
-    public init (_ m: Matrix2x3<T>, _ s: T, _ op:(_:T, _:T) -> T) {
+    public init(_ m: Matrix2x3<T>, _ s: T, _ op: (_: T, _: T) -> T) {
         self.x = Vector3<T>(m.x, s, op)
         self.y = Vector3<T>(m.y, s, op)
     }
 
-    public init (_ m1: Matrix2x3<T>, _ m2: Matrix2x3<T>, _ op:(_:T, _:T) -> T) {
+    public init(_ m1: Matrix2x3<T>, _ m2: Matrix2x3<T>, _ op: (_: T, _: T) -> T) {
         self.x = Vector3<T>(m1.x, m2.x, op)
         self.y = Vector3<T>(m1.y, m2.y, op)
     }
@@ -219,53 +222,53 @@ public struct Matrix2x3<T: ArithmeticType>: MatrixType {
         )
     }
 
-    public static func ==(m1: Matrix2x3<T>, m2: Matrix2x3<T>) -> Bool {
+    public static func == (m1: Matrix2x3<T>, m2: Matrix2x3<T>) -> Bool {
         return m1.x == m2.x && m1.y == m2.y
     }
 
-    public static func *(v: Vector3<T>, m: Matrix2x3<T>) -> Vector2<T> {
+    public static func * (v: Vector3<T>, m: Matrix2x3<T>) -> Vector2<T> {
         var x: T = v.x * m.x.x
-            x = x + v.y * m.x.y
-            x = x + v.z * m.x.z
+        x = x + v.y * m.x.y
+        x = x + v.z * m.x.z
         var y: T = v.x * m.y.x
-            y = y + v.y * m.y.y
-            y = y + v.z * m.y.z
+        y = y + v.y * m.y.y
+        y = y + v.z * m.y.z
         return Vector2<T>(x, y)
     }
 
-    public static func *(m: Matrix2x3<T>, v: Vector2<T>) -> Vector3<T> {
+    public static func * (m: Matrix2x3<T>, v: Vector2<T>) -> Vector3<T> {
         var rv: Vector3<T> = m.x * v.x
-            rv = rv + m.y * v.y
+        rv = rv + m.y * v.y
         return rv
     }
 
-    public static func *(m1: Matrix2x3<T>, m2: Matrix2x2<T>) -> Matrix2x3<T> {
+    public static func * (m1: Matrix2x3<T>, m2: Matrix2x2<T>) -> Matrix2x3<T> {
         var x: Vector3<T> = m1.x * m2[0].x
-            x = x + m1.y * m2[0].y
+        x = x + m1.y * m2[0].y
         var y: Vector3<T> = m1.x * m2[1].x
-            y = y + m1.y * m2[1].y
+        y = y + m1.y * m2[1].y
         return Matrix2x3<T>(x, y)
     }
 
-    public static func *(m1: Matrix2x3<T>, m2: Matrix3x2<T>) -> Matrix3x3<T> {
+    public static func * (m1: Matrix2x3<T>, m2: Matrix3x2<T>) -> Matrix3x3<T> {
         var x: Vector3<T> = m1.x * m2[0].x
-            x = x + m1.y * m2[0].y
+        x = x + m1.y * m2[0].y
         var y: Vector3<T> = m1.x * m2[1].x
-            y = y + m1.y * m2[1].y
+        y = y + m1.y * m2[1].y
         var z: Vector3<T> = m1.x * m2[2].x
-            z = z + m1.y * m2[2].y
+        z = z + m1.y * m2[2].y
         return Matrix3x3<T>(x, y, z)
     }
 
-    public static func *(m1: Matrix2x3<T>, m2: Matrix4x2<T>) -> Matrix4x3<T> {
+    public static func * (m1: Matrix2x3<T>, m2: Matrix4x2<T>) -> Matrix4x3<T> {
         var x: Vector3<T> = m1.x * m2[0].x
-            x = x + m1.y * m2[0].y
+        x = x + m1.y * m2[0].y
         var y: Vector3<T> = m1.x * m2[1].x
-            y = y + m1.y * m2[1].y
+        y = y + m1.y * m2[1].y
         var z: Vector3<T> = m1.x * m2[2].x
-            z = z + m1.y * m2[2].y
+        z = z + m1.y * m2[2].y
         var w: Vector3<T> = m1.x * m2[3].x
-            w = w + m1.y * m2[3].y
+        w = w + m1.y * m2[3].y
         return Matrix4x3<T>(x, y, z, w)
     }
 }

@@ -21,17 +21,19 @@
 
 extension Double {
     public var i: Complex<Double> {
-        return Complex<Double> (0, self)
+        return Complex<Double>(0, self)
     }
 }
 
 extension Float {
     public var i: Complex<Float> {
-        return Complex<Float> (0, self)
+        return Complex<Float>(0, self)
     }
 }
 
-public struct Complex<T: FloatingPointArithmeticType>: MatrixType, ExpressibleByFloatLiteral, ExpressibleByIntegerLiteral, ExpressibleByArrayLiteral {
+public struct Complex<T: FloatingPointArithmeticType>: MatrixType, ExpressibleByFloatLiteral,
+    ExpressibleByIntegerLiteral, ExpressibleByArrayLiteral
+{
     public typealias Element = T
 
     public var real: T
@@ -41,20 +43,20 @@ public struct Complex<T: FloatingPointArithmeticType>: MatrixType, ExpressibleBy
         return [real, imag]
     }
 
-    public func makeIterator() -> IndexingIterator<Array<Element>> {
+    public func makeIterator() -> IndexingIterator<[Element]> {
         return elements.makeIterator()
     }
 
     public subscript(index: Int) -> T {
         get {
-            switch(index) {
+            switch index {
             case 0: return real
             case 1: return imag
             default: preconditionFailure("Complex index out of range")
             }
         }
         set {
-            switch(index) {
+            switch index {
             case 0: real = newValue
             case 1: imag = newValue
             default: preconditionFailure("Complex index out of range")
@@ -71,7 +73,7 @@ public struct Complex<T: FloatingPointArithmeticType>: MatrixType, ExpressibleBy
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(SGLMath.hash(real.hashValue, imag.hashValue))
+        hasher.combine(GLMath.hash(real.hashValue, imag.hashValue))
     }
 
     public init() {
@@ -116,16 +118,16 @@ public struct Complex<T: FloatingPointArithmeticType>: MatrixType, ExpressibleBy
 
     // Init from polar components
     public init(rho: T, theta: T) {
-        self.real = rho * SGLMath.SGLcos(theta)
-        self.imag = rho * SGLMath.SGLsin(theta)
+        self.real = rho * GLMath.cos(theta)
+        self.imag = rho * GLMath.sin(theta)
     }
 
     public var abs: T {
-        return SGLMath.SGLsqrt(real * real + imag * imag)
+        return GLMath.sqrt(real * real + imag * imag)
     }
 
     public var arg: T {
-        return SGLMath.SGLatan(imag, real)
+        return GLMath.atan(imag, real)
     }
 
     public var norm: T {
@@ -137,22 +139,22 @@ public struct Complex<T: FloatingPointArithmeticType>: MatrixType, ExpressibleBy
         return Complex<T>(real, -imag)
     }
 
-    public init (_ x: Complex<T>, _ op:(_:T) -> T) {
+    public init(_ x: Complex<T>, _ op: (_: T) -> T) {
         self.real = op(x[0])
         self.imag = op(x[1])
     }
 
-    public init (_ s: T, _ x: Complex<T>, _ op:(_:T, _:T) -> T) {
+    public init(_ s: T, _ x: Complex<T>, _ op: (_: T, _: T) -> T) {
         self.real = op(s, x[0])
         self.imag = op(s, x[1])
     }
 
-    public init (_ x: Complex<T>, _ s: T, _ op:(_:T, _:T) -> T) {
+    public init(_ x: Complex<T>, _ s: T, _ op: (_: T, _: T) -> T) {
         self.real = op(x[0], s)
         self.imag = op(x[1], s)
     }
 
-    public init (_ x1: Complex<T>, _ x2: Complex<T>, _ op:(_:T, _:T) -> T) {
+    public init(_ x1: Complex<T>, _ x2: Complex<T>, _ op: (_: T, _: T) -> T) {
         self.real = op(x1[0], x2[0])
         self.imag = op(x1[1], x2[1])
     }
@@ -161,28 +163,28 @@ public struct Complex<T: FloatingPointArithmeticType>: MatrixType, ExpressibleBy
         return x.real == y.real && x.imag == y.imag
     }
 
-    public static func *(x1: Complex<T>, x2: Complex<T>) -> Complex<T> {
+    public static func * (x1: Complex<T>, x2: Complex<T>) -> Complex<T> {
         return Complex<T>(
             x1.real * x2.real - x1.imag * x2.imag,
             x1.imag * x2.real + x1.real * x2.imag
         )
     }
 
-    public static func /(x1: Complex<T>, x2: Complex<T>) -> Complex<T> {
+    public static func / (x1: Complex<T>, x2: Complex<T>) -> Complex<T> {
         let cd: T = x2.real * x2.real + x2.imag * x2.imag
         let r: T = x1.real * x2.real + x1.imag * x2.imag
         let i: T = x1.imag * x2.real - x1.real * x2.imag
         return Complex<T>(r / cd, i / cd)
     }
 
-    public static func /(x1: Complex<T>, x2: T) -> Complex<T> {
+    public static func / (x1: Complex<T>, x2: T) -> Complex<T> {
         return Complex<T>(
             x1.real / x2,
             x1.imag / x2
         )
     }
 
-    public static func /(x1: T, x2: Complex<T>) -> Complex<T> {
+    public static func / (x1: T, x2: Complex<T>) -> Complex<T> {
         let cd = x2.real * x2.real + x2.imag * x2.imag
         return Complex<T>(
             (x1 * x2.real) / cd,

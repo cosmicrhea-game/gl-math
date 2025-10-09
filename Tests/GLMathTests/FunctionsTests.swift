@@ -19,8 +19,8 @@
 // TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 // MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
 
+import GLMath
 import XCTest
-import SGLMath
 
 class FunctionsTests: XCTestCase {
 
@@ -71,6 +71,6 @@ class FunctionsTests: XCTestCase {
         ("testIsNanIsInf", testIsNanIsInf),
         ("testPackNorm", testPackNorm),
         ("testPackDouble", testPackDouble),
-        ("testPackHalf", testPackHalf)
+        ("testPackHalf", testPackHalf),
     ]
 }

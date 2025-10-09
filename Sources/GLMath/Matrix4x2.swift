@@ -20,7 +20,7 @@
 // MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
 
 #if canImport(simd)
-import simd
+    import simd
 #endif
 
 public struct Matrix4x2<T: ArithmeticType>: MatrixType {
@@ -30,7 +30,7 @@ public struct Matrix4x2<T: ArithmeticType>: MatrixType {
 
     public subscript(column: Int) -> Vector2<T> {
         get {
-            switch(column) {
+            switch column {
             case 0: return x
             case 1: return y
             case 2: return z
@@ -39,7 +39,7 @@ public struct Matrix4x2<T: ArithmeticType>: MatrixType {
             }
         }
         set {
-            switch(column) {
+            switch column {
             case 0: x = newValue
             case 1: y = newValue
             case 2: z = newValue
@@ -53,7 +53,7 @@ public struct Matrix4x2<T: ArithmeticType>: MatrixType {
         return Array([x.elements, y.elements, z.elements, w.elements].joined())
     }
 
-    public func makeIterator() -> IndexingIterator<Array<Element>> {
+    public func makeIterator() -> IndexingIterator<[Element]> {
         return elements.makeIterator()
     }
 
@@ -62,13 +62,16 @@ public struct Matrix4x2<T: ArithmeticType>: MatrixType {
     }
 
     public var debugDescription: String {
-        return String(describing: type(of: self)) + "(" + [x, y, z, w].map { (v: Vector2<T>) -> String in
-            "[" + [v.x, v.y].map { (n: T) -> String in String(describing: n) }.joined(separator: ", ") + "]"
-        }.joined(separator: ", ") + ")"
+        return String(describing: type(of: self)) + "("
+            + [x, y, z, w].map { (v: Vector2<T>) -> String in
+                "["
+                    + [v.x, v.y].map { (n: T) -> String in String(describing: n) }.joined(
+                        separator: ", ") + "]"
+            }.joined(separator: ", ") + ")"
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(SGLMath.hash(x.hashValue, y.hashValue, z.hashValue, w.hashValue))
+        hasher.combine(GLMath.hash(x.hashValue, y.hashValue, z.hashValue, w.hashValue))
     }
 
     public init() {
@@ -97,11 +100,11 @@ public struct Matrix4x2<T: ArithmeticType>: MatrixType {
         _ x2: T, _ y2: T,
         _ x3: T, _ y3: T,
         _ x4: T, _ y4: T
-        ) {
-            self.x = Vector2<T>(x1, y1)
-            self.y = Vector2<T>(x2, y2)
-            self.z = Vector2<T>(x3, y3)
-            self.w = Vector2<T>(x4, y4)
+    ) {
+        self.x = Vector2<T>(x1, y1)
+        self.y = Vector2<T>(x2, y2)
+        self.z = Vector2<T>(x3, y3)
+        self.w = Vector2<T>(x4, y4)
     }
 
     public init(_ m: Matrix2x2<T>) {
@@ -251,28 +254,28 @@ public struct Matrix4x2<T: ArithmeticType>: MatrixType {
         self.w = Vector2<T>(m.w)
     }
 
-    public init (_ m: Matrix4x2<T>, _ op:(_:T) -> T) {
+    public init(_ m: Matrix4x2<T>, _ op: (_: T) -> T) {
         self.x = Vector2<T>(m.x, op)
         self.y = Vector2<T>(m.y, op)
         self.z = Vector2<T>(m.z, op)
         self.w = Vector2<T>(m.w, op)
     }
 
-    public init (_ s: T, _ m: Matrix4x2<T>, _ op:(_:T, _:T) -> T) {
+    public init(_ s: T, _ m: Matrix4x2<T>, _ op: (_: T, _: T) -> T) {
         self.x = Vector2<T>(s, m.x, op)
         self.y = Vector2<T>(s, m.y, op)
         self.z = Vector2<T>(s, m.z, op)
         self.w = Vector2<T>(s, m.w, op)
     }
 
-    public init (_ m: Matrix4x2<T>, _ s: T, _ op:(_:T, _:T) -> T) {
+    public init(_ m: Matrix4x2<T>, _ s: T, _ op: (_: T, _: T) -> T) {
         self.x = Vector2<T>(m.x, s, op)
         self.y = Vector2<T>(m.y, s, op)
         self.z = Vector2<T>(m.z, s, op)
         self.w = Vector2<T>(m.w, s, op)
     }
 
-    public init (_ m1: Matrix4x2<T>, _ m2: Matrix4x2<T>, _ op:(_:T, _:T) -> T) {
+    public init(_ m1: Matrix4x2<T>, _ m2: Matrix4x2<T>, _ op: (_: T, _: T) -> T) {
         self.x = Vector2<T>(m1.x, m2.x, op)
         self.y = Vector2<T>(m1.y, m2.y, op)
         self.z = Vector2<T>(m1.z, m2.z, op)
@@ -286,17 +289,21 @@ public struct Matrix4x2<T: ArithmeticType>: MatrixType {
         )
     }
 
-    public static func ==(m1: Matrix4x2<T>, m2: Matrix4x2<T>) -> Bool {
+    public static func == (m1: Matrix4x2<T>, m2: Matrix4x2<T>) -> Bool {
         return m1.x == m2.x && m1.y == m2.y && m1.z == m2.z && m1.w == m2.w
     }
 
-    public static func *(v: Vector2<T>, m: Matrix4x2<T>) -> Vector4<T> {
+    public static func * (v: Vector2<T>, m: Matrix4x2<T>) -> Vector4<T> {
         #if canImport(simd)
             if T.self == Float.self {
-                return unsafeBitCast(unsafeBitCast(v, to: float2.self) * unsafeBitCast(m, to: float4x2.self), to: Vector4<T>.self)
+                return unsafeBitCast(
+                    unsafeBitCast(v, to: float2.self) * unsafeBitCast(m, to: float4x2.self),
+                    to: Vector4<T>.self)
             }
             if T.self == Double.self {
-                return unsafeBitCast(unsafeBitCast(v, to: double2.self) * unsafeBitCast(m, to: double4x2.self), to: Vector4<T>.self)
+                return unsafeBitCast(
+                    unsafeBitCast(v, to: double2.self) * unsafeBitCast(m, to: double4x2.self),
+                    to: Vector4<T>.self)
             }
         #endif
         let x: T = v.x * m.x.x + v.y * m.x.y
@@ -306,91 +313,107 @@ public struct Matrix4x2<T: ArithmeticType>: MatrixType {
         return Vector4<T>(x, y, z, w)
     }
 
-    public static func *(m: Matrix4x2<T>, v: Vector4<T>) -> Vector2<T> {
+    public static func * (m: Matrix4x2<T>, v: Vector4<T>) -> Vector2<T> {
         #if canImport(simd)
             if T.self == Float.self {
-                return unsafeBitCast(unsafeBitCast(m, to: float4x2.self) * unsafeBitCast(v, to: float4.self), to: Vector2<T>.self)
+                return unsafeBitCast(
+                    unsafeBitCast(m, to: float4x2.self) * unsafeBitCast(v, to: float4.self),
+                    to: Vector2<T>.self)
             }
             if T.self == Double.self {
-                return unsafeBitCast(unsafeBitCast(m, to: double4x2.self) * unsafeBitCast(v, to: double4.self), to: Vector2<T>.self)
+                return unsafeBitCast(
+                    unsafeBitCast(m, to: double4x2.self) * unsafeBitCast(v, to: double4.self),
+                    to: Vector2<T>.self)
             }
         #endif
         var rv: Vector2<T> = m.x * v.x
-            rv = rv + m.y * v.y
-            rv = rv + m.z * v.z
-            rv = rv + m.w * v.w
+        rv = rv + m.y * v.y
+        rv = rv + m.z * v.z
+        rv = rv + m.w * v.w
         return rv
     }
 
-    public static func *(m1: Matrix4x2<T>, m2: Matrix2x4<T>) -> Matrix2x2<T> {
+    public static func * (m1: Matrix4x2<T>, m2: Matrix2x4<T>) -> Matrix2x2<T> {
         #if canImport(simd)
             if T.self == Float.self {
-                return unsafeBitCast(unsafeBitCast(m1, to: float4x2.self) * unsafeBitCast(m2, to: float2x4.self), to: Matrix2x2<T>.self)
+                return unsafeBitCast(
+                    unsafeBitCast(m1, to: float4x2.self) * unsafeBitCast(m2, to: float2x4.self),
+                    to: Matrix2x2<T>.self)
             }
             if T.self == Double.self {
-                return unsafeBitCast(unsafeBitCast(m1, to: double4x2.self) * unsafeBitCast(m2, to: double2x4.self), to: Matrix2x2<T>.self)
+                return unsafeBitCast(
+                    unsafeBitCast(m1, to: double4x2.self) * unsafeBitCast(m2, to: double2x4.self),
+                    to: Matrix2x2<T>.self)
             }
         #endif
         var x: Vector2<T> = m1.x * m2[0].x
-            x = x + m1.y * m2[0].y
-            x = x + m1.z * m2[0].z
-            x = x + m1.w * m2[0].w
+        x = x + m1.y * m2[0].y
+        x = x + m1.z * m2[0].z
+        x = x + m1.w * m2[0].w
         var y: Vector2<T> = m1.x * m2[1].x
-            y = y + m1.y * m2[1].y
-            y = y + m1.z * m2[1].z
-            y = y + m1.w * m2[1].w
+        y = y + m1.y * m2[1].y
+        y = y + m1.z * m2[1].z
+        y = y + m1.w * m2[1].w
         return Matrix2x2<T>(x, y)
     }
 
-    public static func *(m1: Matrix4x2<T>, m2: Matrix3x4<T>) -> Matrix3x2<T> {
+    public static func * (m1: Matrix4x2<T>, m2: Matrix3x4<T>) -> Matrix3x2<T> {
         #if canImport(simd)
             if T.self == Float.self {
-            return unsafeBitCast(unsafeBitCast(m1, to: float4x2.self) * unsafeBitCast(m2, to: float3x4.self), to: Matrix3x2<T>.self)
+                return unsafeBitCast(
+                    unsafeBitCast(m1, to: float4x2.self) * unsafeBitCast(m2, to: float3x4.self),
+                    to: Matrix3x2<T>.self)
             }
             if T.self == Double.self {
-            return unsafeBitCast(unsafeBitCast(m1, to: double4x2.self) * unsafeBitCast(m2, to: double3x4.self), to: Matrix3x2<T>.self)
+                return unsafeBitCast(
+                    unsafeBitCast(m1, to: double4x2.self) * unsafeBitCast(m2, to: double3x4.self),
+                    to: Matrix3x2<T>.self)
             }
         #endif
         var x: Vector2<T> = m1.x * m2[0].x
-            x = x + m1.y * m2[0].y
-            x = x + m1.z * m2[0].z
-            x = x + m1.w * m2[0].w
+        x = x + m1.y * m2[0].y
+        x = x + m1.z * m2[0].z
+        x = x + m1.w * m2[0].w
         var y: Vector2<T> = m1.x * m2[1].x
-            y = y + m1.y * m2[1].y
-            y = y + m1.z * m2[1].z
-            y = y + m1.w * m2[1].w
+        y = y + m1.y * m2[1].y
+        y = y + m1.z * m2[1].z
+        y = y + m1.w * m2[1].w
         var z: Vector2<T> = m1.x * m2[2].x
-            z = z + m1.y * m2[2].y
-            z = z + m1.z * m2[2].z
-            z = z + m1.w * m2[2].w
+        z = z + m1.y * m2[2].y
+        z = z + m1.z * m2[2].z
+        z = z + m1.w * m2[2].w
         return Matrix3x2<T>(x, y, z)
     }
 
-    public static func *(m1: Matrix4x2<T>, m2: Matrix4x4<T>) -> Matrix4x2<T> {
+    public static func * (m1: Matrix4x2<T>, m2: Matrix4x4<T>) -> Matrix4x2<T> {
         #if canImport(simd)
             if T.self == Float.self {
-            return unsafeBitCast(unsafeBitCast(m1, to: float4x2.self) * unsafeBitCast(m2, to: float2x4.self), to: Matrix4x2<T>.self)
+                return unsafeBitCast(
+                    unsafeBitCast(m1, to: float4x2.self) * unsafeBitCast(m2, to: float2x4.self),
+                    to: Matrix4x2<T>.self)
             }
             if T.self == Double.self {
-            return unsafeBitCast(unsafeBitCast(m1, to: double4x2.self) * unsafeBitCast(m2, to: double2x4.self), to: Matrix4x2<T>.self)
+                return unsafeBitCast(
+                    unsafeBitCast(m1, to: double4x2.self) * unsafeBitCast(m2, to: double2x4.self),
+                    to: Matrix4x2<T>.self)
             }
         #endif
         var x: Vector2<T> = m1.x * m2[0].x
-            x = x + m1.y * m2[0].y
-            x = x + m1.z * m2[0].z
-            x = x + m1.w * m2[0].w
+        x = x + m1.y * m2[0].y
+        x = x + m1.z * m2[0].z
+        x = x + m1.w * m2[0].w
         var y: Vector2<T> = m1.x * m2[1].x
-            y = y + m1.y * m2[1].y
-            y = y + m1.z * m2[1].z
-            y = y + m1.w * m2[1].w
+        y = y + m1.y * m2[1].y
+        y = y + m1.z * m2[1].z
+        y = y + m1.w * m2[1].w
         var z: Vector2<T> = m1.x * m2[2].x
-            z = z + m1.y * m2[2].y
-            z = z + m1.z * m2[2].z
-            z = z + m1.w * m2[2].w
+        z = z + m1.y * m2[2].y
+        z = z + m1.z * m2[2].z
+        z = z + m1.w * m2[2].w
         var w: Vector2<T> = m1.x * m2[3].x
-            w = w + m1.y * m2[3].y
-            w = w + m1.z * m2[3].z
-            w = w + m1.w * m2[3].w
+        w = w + m1.y * m2[3].y
+        w = w + m1.z * m2[3].z
+        w = w + m1.w * m2[3].w
         return Matrix4x2<T>(x, y, z, w)
     }
 }
